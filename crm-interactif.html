@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM & DMP — Cours Interactif</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8f6f1;--card:#fff;--border:#e5e0d5;--green:#3a6b4a;--gl:rgba(58,107,74,0.08);--amber:#b5712a;--al:rgba(181,113,42,0.08);--blue:#3d5a8a;--bl:rgba(61,90,138,0.08);--red:#b84040;--rl:rgba(184,64,64,0.08);--text:#1a1a1a;--muted:#6b6560;--muted2:#9a948c;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.7;min-height:100vh;}
+/* HERO */
+.hero{background:var(--card);border-bottom:1px solid var(--border);padding:48px 60px 36px;}
+.hero-label{font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.hero-label::before{content:'';width:20px;height:1px;background:var(--green);}
+.hero h1{font-family:'Lora',serif;font-size:clamp(32px,5vw,56px);font-weight:600;line-height:1.05;letter-spacing:-.02em;}
+.hero h1 em{color:var(--green);font-style:italic;}
+.hero-sub{font-size:14px;color:var(--muted);margin-top:8px;}
+.hero-prof{display:flex;align-items:center;gap:12px;margin-top:22px;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;max-width:480px;}
+.prof-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--green),#5a9b6e);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.prof-name{font-weight:600;font-size:13px;}
+.prof-role{font-size:11.5px;color:var(--muted);}
+/* PROGRESS */
+.prog-bar{background:var(--card);border-bottom:1px solid var(--border);padding:11px 60px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;}
+.prog-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
+.prog-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--green),#6dab82);border-radius:2px;transition:width .8s;}
+.prog-pct{font-family:'DM Mono',monospace;font-size:12px;color:var(--green);font-weight:500;}
+.nav-dots{display:flex;gap:6px;margin-left:12px;}
+.ndot{width:8px;height:8px;border-radius:50%;border:1.5px solid #ccc;background:transparent;cursor:pointer;transition:all .2s;}
+.ndot.done{background:rgba(58,107,74,.35);border-color:var(--green);}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;}
+/* SIDEBAR */
+.sidebar{padding:24px 0;position:sticky;top:46px;height:calc(100vh - 46px);overflow-y:auto;border-right:1px solid var(--border);background:var(--card);}
+.sb-head{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);padding:8px 20px 4px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all .18s;user-select:none;}
+.sb-item:hover{background:var(--gl);color:var(--text);}
+.sb-item.active{background:var(--gl);border-left-color:var(--green);color:var(--green);font-weight:500;}
+.sb-item.done{color:var(--green);}
+.sb-num{font-family:'DM Mono',monospace;font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 5px;min-width:22px;text-align:center;flex-shrink:0;}
+.sb-item.active .sb-num{background:var(--green);border-color:var(--green);color:#fff;}
+.sb-chk{margin-left:auto;font-size:11px;color:var(--green);opacity:0;transition:opacity .3s;}
+.sb-item.done .sb-chk{opacity:1;}
+/* CONTENT */
+.content{padding:40px 52px;max-width:820px;}
+.panel{display:none;animation:fadeUp .3s ease;}
+.panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.sec-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+h2{font-family:'Lora',serif;font-size:23px;font-weight:600;letter-spacing:-.01em;margin-bottom:5px;line-height:1.25;}
+.sec-meta{font-size:12.5px;color:var(--muted);margin-bottom:24px;font-style:italic;}
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 20px;}
+.tag{font-family:'DM Mono',monospace;font-size:10px;padding:3px 9px;border-radius:100px;border:1px solid;}
+.tag.g{background:var(--gl);border-color:rgba(58,107,74,.18);color:var(--green);}
+.tag.a{background:var(--al);border-color:rgba(181,113,42,.18);color:var(--amber);}
+.tag.b{background:var(--bl);border-color:rgba(61,90,138,.18);color:var(--blue);}
+/* CALLOUT & PROF-SAYS */
+.prof-says{background:var(--gl);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:12px 16px 12px 36px;margin:16px 0;font-size:13.5px;color:var(--text);line-height:1.7;position:relative;}
+.prof-says::before{content:'"';font-family:'Lora',serif;font-size:32px;color:var(--green);opacity:.3;position:absolute;top:2px;left:10px;line-height:1;}
+.prof-says strong{color:var(--green);}
+.callout{padding:12px 16px;margin:14px 0;border-radius:8px;font-size:13.5px;line-height:1.7;border:1px solid;}
+.callout.g{background:var(--gl);border-color:rgba(58,107,74,.18);}
+.callout.a{background:var(--al);border-color:rgba(181,113,42,.18);}
+.callout.b{background:var(--bl);border-color:rgba(61,90,138,.18);}
+.callout.g strong{color:var(--green);}
+.callout.a strong{color:var(--amber);}
+.callout.b strong{color:var(--blue);}
+/* CARDS */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin:14px 0 22px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;transition:all .2s;}
+.card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 4px 18px rgba(58,107,74,.07);}
+.card-icon{font-size:17px;margin-bottom:8px;}
+.card-title{font-size:13px;font-weight:600;margin-bottom:5px;}
+.card-body{font-size:12.5px;color:var(--muted);line-height:1.6;}
+/* ACCORDION */
+.acc{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:11px;background:var(--card);}
+.acc-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none;transition:background .18s;}
+.acc-head:hover{background:var(--bg);}
+.acc-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;}
+.acc-arrow{font-size:10px;color:var(--muted2);transition:transform .3s;}
+.acc.open .acc-arrow{transform:rotate(180deg);}
+.acc-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border);}
+.acc.open .acc-body{display:block;}
+/* LIST */
+.klist{list-style:none;margin-top:10px;}
+.klist li{display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);line-height:1.6;align-items:flex-start;}
+.klist li:last-child{border-bottom:none;}
+.klist li::before{content:'→';color:var(--green);flex-shrink:0;margin-top:2px;}
+.klist strong{color:var(--text);font-weight:500;}
+/* TIMELINE */
+.timeline{position:relative;padding-left:24px;margin:12px 0;}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--green),transparent);}
+.tl-item{position:relative;margin-bottom:16px;}
+.tl-dot{position:absolute;left:-20px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--green);background:var(--bg);}
+.tl-item.lit .tl-dot{background:var(--green);}
+.tl-title{font-size:13.5px;font-weight:600;margin-bottom:2px;}
+.tl-desc{font-size:12.5px;color:var(--muted);}
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;}
+.tbl th{text-align:left;padding:8px 11px;background:var(--bg);border:1px solid var(--border);font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.tbl td{padding:8px 11px;border:1px solid var(--border);color:var(--muted);vertical-align:top;}
+.tbl td strong{color:var(--text);}
+.tbl tr:hover td{background:var(--bg);}
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:10.5px;padding:1px 6px;border-radius:3px;background:var(--gl);color:var(--green);}
+/* FORMULA */
+.formula{font-family:'Lora',serif;font-style:italic;font-size:14px;text-align:center;padding:13px;color:var(--amber);border:1px dashed rgba(181,113,42,.3);border-radius:8px;margin:12px 0;background:var(--al);}
+/* COMPARE */
+.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;}
+.cmp-col{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.cmp-head{padding:10px 14px;font-family:'Lora',serif;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--border);}
+.cmp-head.g{background:var(--gl);color:var(--green);}
+.cmp-head.b{background:var(--bl);color:var(--blue);}
+.cmp-head.a{background:var(--al);color:var(--amber);}
+.cmp-body{padding:10px 12px;}
+.cmp-item{font-size:11.5px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--border);display:flex;gap:5px;line-height:1.45;}
+.cmp-item:last-child{border-bottom:none;}
+.cmp-item::before{content:'·';font-weight:700;flex-shrink:0;}
+.cmp-item.g::before{color:var(--green);}
+.cmp-item.b::before{color:var(--blue);}
+.cmp-item.a::before{color:var(--amber);}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:16px 0 22px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.stat-n{font-family:'Lora',serif;font-size:26px;font-weight:600;color:var(--green);}
+.stat-l{font-size:11px;color:var(--muted);margin-top:3px;}
+/* BUTTON */
+.btn-done{margin-top:24px;display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .22s;}
+.btn-done:hover{border-color:var(--green);color:var(--green);}
+.btn-done.marked{border-color:var(--green);background:var(--gl);color:var(--green);}
+/* QCM */
+.quiz-intro{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px;text-align:center;}
+.quiz-intro h3{font-family:'Lora',serif;font-size:19px;margin-bottom:7px;}
+.quiz-intro p{font-size:13px;color:var(--muted);}
+.score-display{font-family:'Lora',serif;font-size:38px;font-weight:600;color:var(--green);margin:8px 0 3px;}
+.score-sub{font-size:12px;color:var(--muted);}
+.qblock{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:20px;margin-bottom:12px;}
+.qblock.answered{border-color:#d4cec2;}
+.q-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;}
+.q-text{font-family:'Lora',serif;font-size:15px;line-height:1.5;color:var(--text);margin-bottom:14px;}
+.q-opts{display:flex;flex-direction:column;gap:6px;}
+.q-opt{padding:10px 13px;border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:13.5px;color:var(--muted);transition:all .18s;background:var(--bg);}
+.q-opt:hover:not([disabled]){border-color:var(--green);color:var(--text);background:var(--gl);}
+.q-opt.correct{border-color:var(--green);background:var(--gl);color:var(--green);font-weight:500;}
+.q-opt.wrong{border-color:var(--red);background:var(--rl);color:var(--red);}
+.q-opt[disabled]{cursor:default;}
+.q-fb{margin-top:9px;padding:9px 13px;border-radius:7px;font-size:12.5px;display:none;line-height:1.6;}
+.q-fb.show{display:block;}
+.q-fb.ok{background:var(--gl);color:var(--green);border:1px solid rgba(58,107,74,.2);}
+.q-fb.ko{background:var(--rl);color:var(--red);border:1px solid rgba(184,64,64,.2);}
+/* FINAL SCORE */
+.final-score{display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;text-align:center;margin-top:20px;}
+.final-score.show{display:block;animation:fadeUp .5s ease;}
+.fs-grade{font-family:'Lora',serif;font-size:68px;font-weight:600;line-height:1;}
+.fs-label{font-size:14px;color:var(--muted);margin-top:6px;}
+.fs-comment{font-size:14.5px;margin-top:18px;line-height:1.7;color:var(--text);}
+.fs-bar{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin:18px 0;}
+.fs-fill{height:100%;border-radius:4px;transition:width 1.2s ease;}
+/* RESPONSIVE */
+@media(max-width:768px){.layout{grid-template-columns:1fr;}.sidebar{position:relative;height:auto;border-right:none;border-bottom:1px solid var(--border);}.content{padding:22px 18px;}.hero{padding:28px 18px;}.prog-bar{padding:10px 18px;}.stats,.compare{grid-template-columns:1fr;}}
+hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">PSB Paris — Semestre 8</div>
+  <h1>CRM <em>&</em> DMP</h1>
+  <p class="hero-sub">Customer Relationship Management · Data Management Platform · CDP · Parcours Client</p>
+  <div class="hero-prof">
+    <div class="prof-av">👩‍💼</div>
+    <div>
+      <div class="prof-name">Kahina Ikhlef</div>
+      <div class="prof-role">Consultante Transformation Digitale — Gouvernance Marketing/CRM · 20 ans d'expérience</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="prog-bar">
+  <span class="prog-lbl">Progression</span>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+  <span class="prog-pct" id="progPct">0%</span>
+  <div class="nav-dots" id="navDots"></div>
+</div>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sb-head">Navigation</div>
+  <div class="sb-item active" onclick="show('overview',this)"><span class="sb-num">✦</span> Vue d'ensemble <span class="sb-chk">✓</span></div>
+  <div class="sb-head" style="margin-top:8px">Sessions</div>
+  <div class="sb-item" onclick="show('s1',this)" id="si-s1"><span class="sb-num">S1</span> Intro & Marché CRM <span class="sb-chk">✓</span></div>
+  <div class="sb-item" onclick="show('s2',this)" id="si-s2"><span class="sb-num">S2</span> Comportement & CLV <span class="sb-chk">✓</span></div>
+  <div class="sb-item" onclick="show('s3',this)" id="si-s3"><span class="sb-num">S3</span> UX & Personnalisation <span class="sb-chk">✓</span></div>
+  <div class="sb-item" onclick="show('s4',this)" id="si-s4"><span class="sb-num">S4</span> Cartographie Parcours <span class="sb-chk">✓</span></div>
+  <div class="sb-item" onclick="show('s5',this)" id="si-s5"><span class="sb-num">S5</span> HubSpot Sales Hub <span class="sb-chk">✓</span></div>
+  <div class="sb-head" style="margin-top:8px">Systèmes</div>
+  <div class="sb-item" onclick="show('crm',this)"><span class="sb-num">📊</span> CRM — Système</div>
+  <div class="sb-item" onclick="show('dmp',this)"><span class="sb-num">🗄️</span> DMP — Plateforme</div>
+  <div class="sb-item" onclick="show('cdp',this)"><span class="sb-num">🔗</span> CDP & Comparatif</div>
+  <div class="sb-head" style="margin-top:8px">Révision</div>
+  <div class="sb-item" onclick="show('glossaire',this)"><span class="sb-num">📖</span> Glossaire</div>
+  <div class="sb-item" onclick="show('qcm',this)"><span class="sb-num">⚡</span> QCM — Examen Final</div>
+</nav>
+
+<main class="content">
+
+<div class="panel active" id="panel-overview">
+  <div class="sec-lbl">Vue d'ensemble</div>
+  <h2>CRM, DMP & CDP — PSB S8</h2>
+  <p class="sec-meta">Kahina Ikhlef · Consultante Transformation Digitale · 20 ans d'expérience</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-n">5</div><div class="stat-l">Sessions de cours</div></div>
+    <div class="stat"><div class="stat-n">50%</div><div class="stat-l">Évaluation continue</div></div>
+    <div class="stat"><div class="stat-n">128Md$</div><div class="stat-l">Marché CRM en 2028</div></div>
+  </div>
+  <div class="prof-says">Ma mission est de vous accompagner dans l'adoption des méthodologies de management de projets et la mise en place des innovations technologiques pour fluidifier vos processus. <strong>Ce cours est basé sur la pédagogie inversée</strong> : vous apprenez en faisant, et la théorie vient consolider ensuite.</div>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">📋 Objectifs pédagogiques</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li>Comprendre le <strong>parcours client</strong> et ses étapes avant et après l'achat</li>
+      <li>Apprendre à <strong>capter, comprendre et exploiter</strong> les données clients</li>
+      <li>Maîtriser les outils <strong>CRM, DMP et CDP</strong> pour une stratégie data-driven</li>
+      <li>Construire un <strong>RCU (Référentiel Client Unique)</strong> pour optimiser la relation client</li>
+      <li>Obtenir une <strong>certification CRM</strong> (Brevo ou HubSpot) valorisable sur le CV</li>
+    </ul></div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">📝 Modalités d'évaluation</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="callout g" style="margin-top:10px"><strong>50% Évaluation continue</strong> — Cas pratiques réalisés en cours. Moyenne des notes obtenues sur ces exercices.</div>
+      <div class="callout a" style="margin-top:10px"><strong>50% Examen partiel</strong> — À la fin du module, sur l'ensemble des concepts étudiés.</div>
+      <div class="prof-says" style="margin-top:10px">Ce que j'évalue principalement c'est <strong>votre implication, votre assiduité</strong>, votre capacité à aller chercher l'information, la structurer et la restituer. Un seuil de 50–60% est suffisant pour valider.</div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🗓️ Progression des 5 sessions</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><div class="timeline">
+      <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">S1 — 16 fév. 2026 · Intro CRM & Analyse de marché</div><div class="tl-desc">Objectifs, format pédagogique, posture consultant, premier cas pratique de veille</div></div>
+      <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">S2 — 23 fév. 2026 · Comportement consommateur & CLV</div><div class="tl-desc">Baromètre devices, acquisition vs fidélisation, facteurs d'achat, RSE, éthique</div></div>
+      <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">S3 — 17 mars 2026 · UX & Personnalisation</div><div class="tl-desc">Segmentation, points de friction, suspect→prospect→client→ambassadeur, CLV</div></div>
+      <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">S4 — 24 mars 2026 · Cartographie parcours client</div><div class="tl-desc">Projet individuel/binôme, pédagogie inversée, certification Brevo</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">S5 — 30 mars 2026 · HubSpot Sales Hub</div><div class="tl-desc">4 modules de certification, leads, pipeline, app mobile</div></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-s1">
+  <div class="sec-lbl">Session 1 · 16 fév. 2026</div>
+  <h2>Introduction au CRM & Analyse de Marché</h2>
+  <p class="sec-meta">1h théorie + 2h pratique · Posture consultant</p>
+  <div class="tags"><span class="tag g">Marché CRM</span><span class="tag g">Analyse concurrentielle</span><span class="tag b">Posture consultant</span><span class="tag a">Cas pratique groupe</span></div>
+  <div class="prof-says">On va voir comment est composé le parcours client, quels sont les différents étapes d'approche client, <strong>avant d'acheter un produit</strong>, et surtout une fois qu'on a acheté. Pour pouvoir <strong>capter la donnée, la comprendre et l'exploiter</strong>.</div>
+
+  <!-- ── CONCEPT CRM ── -->
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">📖 Qu'est-ce que le CRM ? — Le concept complet</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="callout b" style="margin-top:10px">
+        <strong>CRM = Customer Relationship Management</strong> (Gestion de la Relation Client en français, ou GRC). C'est à la fois <strong>une stratégie d'entreprise, un ensemble de processus ET un logiciel</strong>. Ces trois dimensions sont indissociables.
+      </div>
+
+      <!-- 3 dimensions -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0">
+        <div class="card">
+          <div class="card-icon">🧠</div>
+          <div class="card-title" style="color:var(--green)">Stratégie</div>
+          <div class="card-body">La volonté de l'entreprise d'être <em>customer-centric</em> — placer le client au centre de toutes les décisions. Sans vision stratégique, l'outil ne sert à rien.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <div class="card-title" style="color:var(--blue)">Processus</div>
+          <div class="card-body">Les bonnes pratiques et méthodes que l'entreprise systématise pour renforcer le service client et mieux gérer la relation avec ses utilisateurs.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💻</div>
+          <div class="card-title" style="color:var(--amber)">Technologie</div>
+          <div class="card-body">Le logiciel CRM (souvent en SaaS/cloud) que les équipes utilisent pour centraliser, automatiser et analyser chaque interaction client.</div>
+        </div>
+      </div>
+
+      <div class="callout g"><strong>À retenir :</strong> On ne peut pas avoir un CRM logiciel efficace sans une stratégie CRM claire. <strong>L'outil sert la vision — pas l'inverse.</strong></div>
+
+      <!-- Pourquoi le CRM existe -->
+      <p style="margin:16px 0 8px;font-weight:600;font-size:13.5px">🤔 Pourquoi le CRM existe-t-il ?</p>
+      <ul class="klist">
+        <li>Sans CRM, les informations clients sont <strong>éparpillées</strong> : dans les boîtes mail des commerciaux, dans des fichiers Excel disparates, dans la mémoire de chaque collaborateur</li>
+        <li>Quand un commercial part, <strong>l'historique client part avec lui</strong></li>
+        <li>Un CRM crée une <strong>base de données unifiée</strong> accessible à toutes les équipes — marketing, ventes, service client</li>
+        <li>Le service marketing connaît l'historique d'achat pour <strong>personnaliser ses campagnes</strong></li>
+        <li>Le commercial <strong>reprend une négociation là où son collègue l'a laissée</strong></li>
+        <li>Le support client comprend immédiatement le <strong>contexte d'une demande</strong></li>
+      </ul>
+
+      <!-- Bref historique -->
+      <p style="margin:16px 0 8px;font-weight:600;font-size:13.5px">⏳ Bref historique du CRM</p>
+      <div class="timeline">
+        <div class="tl-item lit"><div class="tl-dot"></div>
+          <div class="tl-title">Années 1940 — Le Rolodex</div>
+          <div class="tl-desc">L'ancêtre du CRM : un classeur rotatif pour stocker les contacts. Première tentative de centralisation de la relation client.</div>
+        </div>
+        <div class="tl-item lit"><div class="tl-dot"></div>
+          <div class="tl-title">1987 — Premier logiciel CRM : ACT!</div>
+          <div class="tl-desc">Pat Sullivan et Mike Muhney inventent le premier logiciel CRM, appelé ACT! — permettant de gérer les contacts de manière numérique.</div>
+        </div>
+        <div class="tl-item lit"><div class="tl-dot"></div>
+          <div class="tl-title">Années 1990 — Le terme "CRM" naît</div>
+          <div class="tl-desc">Le terme Customer Relationship Management émerge. Thomas Siebel (ex-Oracle) lance Siebel Systems, le CRM phare de la décennie. Apparition des Sales Force Automation (SFA) et du concept de "lead".</div>
+        </div>
+        <div class="tl-item lit"><div class="tl-dot"></div>
+          <div class="tl-title">1999 — Salesforce révolutionne le marché</div>
+          <div class="tl-desc">Marc Benioff fonde Salesforce et propose le premier CRM 100% cloud (SaaS). C'est une rupture totale avec les logiciels on-premise coûteux.</div>
+        </div>
+        <div class="tl-item lit"><div class="tl-dot"></div>
+          <div class="tl-title">2000s — Explosion du CRM & notion de CLV</div>
+          <div class="tl-desc">La notion de Customer Lifetime Value (valeur à vie du client) s'impose. Le CRM devient une fonction stratégique de l'entreprise, pas juste un outil commercial.</div>
+        </div>
+        <div class="tl-item"><div class="tl-dot"></div>
+          <div class="tl-title">Aujourd'hui — CRM augmenté par l'IA</div>
+          <div class="tl-desc">Les CRM modernes intègrent l'intelligence artificielle (prédiction de churn, scoring automatique, recommandations), se connectent à tous les outils (ERP, emailing, téléphonie) et traitent des données en temps réel.</div>
+        </div>
+      </div>
+
+      <!-- 3 types de CRM -->
+      <p style="margin:16px 0 8px;font-weight:600;font-size:13.5px">🗂️ Les 3 grandes familles de CRM</p>
+      <table class="tbl">
+        <thead><tr><th>Type</th><th>Rôle</th><th>Exemples</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>CRM Opérationnel</strong></td>
+            <td>Automatise et fluidifie les processus commerciaux, marketing et support. Gère les contacts, devis, relances, tickets. Gain de temps au quotidien.</td>
+            <td>Pipedrive, noCRM, HubSpot</td>
+          </tr>
+          <tr>
+            <td><strong>CRM Analytique</strong></td>
+            <td>Collecte et analyse les données clients pour aider à la décision stratégique. Segmentation avancée, scoring prédictif, analyse de la valeur client.</td>
+            <td>Salesforce Analytics, Power BI</td>
+          </tr>
+          <tr>
+            <td><strong>CRM Collaboratif</strong></td>
+            <td>Facilite le partage d'informations entre tous les départements (ventes, marketing, support) pour une expérience client cohérente sur tous les points de contact.</td>
+            <td>Microsoft Dynamics 365, Zoho</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout g" style="margin-top:4px">En pratique, la plupart des CRM modernes <strong>combinent ces trois dimensions</strong> pour offrir une solution complète.</div>
+
+      <!-- CRM vs ERP -->
+      <p style="margin:16px 0 8px;font-weight:600;font-size:13.5px">⚖️ CRM vs ERP — Quelle différence ?</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="card">
+          <div class="card-icon">🤝</div>
+          <div class="card-title" style="color:var(--green)">CRM</div>
+          <div class="card-body">Gère les <strong>relations avec vos contacts externes</strong> (clients, prospects, partenaires). Orienté commercial, marketing et service client.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏭</div>
+          <div class="card-title" style="color:var(--blue)">ERP</div>
+          <div class="card-body">Gère les <strong>ressources internes</strong> de l'entreprise : comptabilité, stocks, RH, production. Orienté gestion opérationnelle.</div>
+        </div>
+      </div>
+      <div class="callout b">CRM et ERP sont <strong>complémentaires, pas concurrents</strong>. Beaucoup de grandes entreprises utilisent les deux, intégrés ensemble (ex : SAP CX + SAP ERP, Salesforce + SAP).</div>
+
+      <!-- Ce que le CRM apporte concrètement -->
+      <p style="margin:16px 0 8px;font-weight:600;font-size:13.5px">📈 Ce qu'un CRM bien utilisé apporte concrètement</p>
+      <ul class="klist">
+        <li><strong>Commerciaux :</strong> suivi des prospects, gestion des opportunités, pipeline de vente clair, prévisions de revenus</li>
+        <li><strong>Marketing :</strong> segmentation précise, campagnes personnalisées, mesure du ROI des actions</li>
+        <li><strong>Service client :</strong> historique complet, réponse contextuelle, satisfaction améliorée</li>
+        <li><strong>Direction :</strong> tableaux de bord en temps réel, reporting automatisé, vision 360° de la performance</li>
+        <li><strong>Conformité RGPD :</strong> traçabilité des consentements, gestion des droits des personnes, limitation des accès</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🎯 Objectifs du cours</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li>Comprendre le <strong>parcours client</strong> et ses étapes avant et après l'achat</li>
+      <li>Apprendre à <strong>capter, comprendre et exploiter</strong> les données clients</li>
+      <li>Maîtriser les outils <strong>CRM, DMP et CDP</strong> pour mettre en place une stratégie</li>
+      <li>Obtenir une <strong>certification CRM</strong> (Salesforce ou similaire) à ajouter au CV</li>
+      <li>Construire ensemble un <strong>RCU (Référentiel Client Unique)</strong></li>
+    </ul></div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🌍 Marché mondial du CRM (2024)</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="callout a" style="margin-top:10px"><strong>128 milliards $ en 2028</strong> avec un taux de croissance annuel de 12 %. Un must-have indispensable pour toutes les entreprises.</div>
+      <table class="tbl">
+        <thead><tr><th>Éditeur</th><th>Part mondiale</th><th>Spécificité</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Salesforce</strong></td><td><span class="badge">21,7 %</span></td><td>Leader mondial — Sales, Service, Marketing, Data Cloud</td></tr>
+          <tr><td><strong>HubSpot</strong></td><td><span class="badge">5,7 %</span></td><td>Freemium, très populaire PME, interface intuitive</td></tr>
+          <tr><td><strong>Microsoft Dynamics 365</strong></td><td><span class="badge">5–6 %</span></td><td>Intégré à Office 365, Azure, Power Platform</td></tr>
+          <tr><td><strong>Oracle</strong></td><td><span class="badge">5 %</span></td><td>Grandes entreprises, secteurs réglementés</td></tr>
+          <tr><td><strong>SAP</strong></td><td><span class="badge">4 %</span></td><td>Industries, intégration ERP poussée</td></tr>
+          <tr><td><strong>Zoho</strong></td><td><span class="badge">3 %</span></td><td>Modulaire et abordable, PME et TPE</td></tr>
+          <tr><td><strong>Autres</strong></td><td><span class="badge">~50 %</span></td><td>Efficy, Pipedrive, Freshworks, Sellsy, Axonaut…</td></tr>
+        </tbody>
+      </table>
+      <div class="callout b"><strong>En France :</strong> marché estimé à 1,8 Md€ en 2023. Leaders : SAP, Salesforce, Oracle. Éditeurs locaux : Efficy, Sellsy, Axonaut — adaptés aux PME/TPE françaises.</div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🏢 CRM par taille d'entreprise</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <table class="tbl">
+        <thead><tr><th>Taille</th><th>Besoins</th><th>Solutions recommandées</th></tr></thead>
+        <tbody>
+          <tr><td><strong>TPE / Auto-entrepreneur</strong></td><td>Suivi contacts, prospection simple. Interface intuitive, gratuit ou low cost.</td><td>HubSpot Free, Zoho CRM, noCRM.io, Odoo communautaire</td></tr>
+          <tr><td><strong>PME / ETI</strong></td><td>Structuration, croissance, centralisation. Automatisations.</td><td>Pipedrive, Sellsy, Zoho CRM Plus, HubSpot, Odoo entreprise</td></tr>
+          <tr><td><strong>Grandes entreprises</strong></td><td>Scénarios complexes, scalabilité, ERP intégré.</td><td>Salesforce, Dynamics 365, SAP CX, Oracle, Odoo on-premise</td></tr>
+        </tbody>
+      </table>
+      <div class="prof-says">Est-ce que j'ai besoin d'acheter une Ferrari si j'ai besoin de me déplacer 2 km par jour ? <strong>La solution adéquate, c'est celle qui correspond à vos besoins réels.</strong></div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">💼 Cas pratique — Veille stratégique CRM</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="callout g" style="margin-top:10px"><strong>Posture :</strong> Consultant pour une SS2I / ESN.<br><strong>Mission :</strong> Analyser l'évolution du marché des logiciels CRM afin de conseiller votre entreprise sur les tendances, acteurs clés et opportunités de croissance.</div>
+      <ul class="klist">
+        <li>Taille du marché CRM et perspectives de croissance</li>
+        <li>Nouveaux besoins fonctionnels des entreprises en matière de CRM</li>
+        <li>Innovations technologiques impactant le marché (IA, automatisation…)</li>
+        <li>Principaux acteurs, parts de marché, stratégies de Salesforce & HubSpot</li>
+        <li>Startups émergentes et leurs innovations</li>
+        <li>Défis, freins à l'adoption, opportunités pour de nouveaux entrants</li>
+      </ul>
+      <div class="callout a"><strong>Livrables :</strong> Rapport PDF structuré + Canva synthétique. Présentation orale 15 min. Groupes de 4 personnes max. Sources fiables. L'IA est encouragée avec discernement.</div>
+    </div>
+  </div>
+  <button class="btn-done" id="bd-s1" onclick="markDone('s1')">○ Marquer comme vu</button>
+</div>
+
+<div class="panel" id="panel-s2">
+  <div class="sec-lbl">Session 2 · 23 fév. 2026</div>
+  <h2>Comportement du Consommateur & CLV</h2>
+  <p class="sec-meta">Baromètre digital · Parcours client · Customer Lifetime Value</p>
+  <div class="tags"><span class="tag g">CLV</span><span class="tag g">Acquisition</span><span class="tag g">Fidélisation</span><span class="tag b">Baromètre Digital</span><span class="tag a">RSE & Éthique</span></div>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">📱 Baromètre Digital — Usages des Devices (France)</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="prof-says">Je vous conseille vraiment d'aller consulter ce baromètre — il a cette spécificité de bien donner tous ces usages-là. Ces chiffres ne sont pas figés, ils varient selon les caractéristiques sociodémographiques.</div>
+      <div class="card-grid" style="margin-top:12px">
+        <div class="card"><div class="card-icon">🌐</div><div class="card-title">+62M d'internautes</div><div class="card-body">94 % de la population +12 ans. <strong>2h40/jour</strong> sur Internet en moyenne.</div></div>
+        <div class="card"><div class="card-icon">📱</div><div class="card-title">91 % ont un smartphone</div><div class="card-body"><strong>96 %</strong> chez les 12–17 ans. <strong>70 %</strong> chez les 70 ans et plus.</div></div>
+        <div class="card"><div class="card-icon">💬</div><div class="card-title">54M socionautes</div><div class="card-body">80 % de la population. <strong>1h46/jour</strong> sur les réseaux sociaux.</div></div>
+        <div class="card"><div class="card-icon">⌚</div><div class="card-title">+20% montres connectées</div><div class="card-body">Augmentation de <strong>+23%</strong> vs l'année précédente.</div></div>
+        <div class="card"><div class="card-icon">💻</div><div class="card-title">80% ont un laptop</div><div class="card-body">46% une tablette (en régression). 41% une console de jeux.</div></div>
+        <div class="card"><div class="card-icon">🥽</div><div class="card-title">Casques VR émergents</div><div class="card-body">4,4% (+12,8%). Expériences immersives comme une boutique Dior virtuelle.</div></div>
+      </div>
+      <div class="callout b"><strong>E-commerce :</strong> 175,3 Md€ de CA record (+9,6 %). 62 commandes/an par cyberacheteur, soit 4 216 €/an. <strong>66 %</strong> préfèrent une expérience phygitale (ligne + magasin).</div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🔄 Parcours Client & CLV</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="prof-says">Jusqu'à l'acte d'achat, la marque est en train d'investir pour convertir en client. <strong>Le premier achat est souvent déficitaire</strong> au regard des investissements engagés. C'est pourquoi la fidélisation est indispensable.</div>
+      <div class="timeline">
+        <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">Acquisition</div><div class="tl-desc">Attirer le prospect — capter son attention via publicités, réseaux, bouche-à-oreille</div></div>
+        <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">Premier achat — souvent déficitaire</div><div class="tl-desc">La marque commence à générer des revenus mais les investissements ne sont pas encore amortis</div></div>
+        <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">Fidélisation</div><div class="tl-desc">Offres personnalisées, garder une relation saine pour augmenter la valeur du client</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Ambassadeur — CLV maximale</div><div class="tl-desc">Le client laisse des avis, recommande la marque activement</div></div>
+      </div>
+      <div class="formula">CLV = Customer Lifetime Value = la valeur du client dans une entreprise tout au long de sa durée de vie</div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🌿 Facteurs d'influence au-delà du prix</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="prof-says">Le prix n'est plus le seul facteur décisionnel. <strong>L'expérience proposée est devenue un facteur important.</strong> On est très sensible à l'éthique des marques et à leurs engagements RSE.</div>
+      <ul class="klist">
+        <li><strong>Éthique :</strong> 72 % prêts à payer plus pour des produits locaux. 66 % pour des marques engagées éthiquement</li>
+        <li><strong>Durabilité :</strong> 94 % des Français déclarent que la durabilité influence leurs habitudes (provenance, emballages, matériaux)</li>
+        <li><strong>RSE :</strong> Empreinte carbone, conditions de travail, tests sur animaux, matières nocives — autant de critères décisionnels</li>
+        <li><strong>Impact environnemental :</strong> 65 % préfèrent acheter auprès d'entreprises respectueuses de l'environnement</li>
+        <li><strong>Expérience client :</strong> 73 % tiennent compte de l'expérience dans leurs décisions d'achat — c'est irrévocable</li>
+        <li><strong>Un site avec des bugs</strong> qui n'inspire pas confiance ? L'expérience s'arrête immédiatement</li>
+      </ul>
+    </div>
+  </div>
+  <button class="btn-done" id="bd-s2" onclick="markDone('s2')">○ Marquer como visto</button>
+</div>
+
+<div class="panel" id="panel-s3">
+  <div class="sec-lbl">Session 3 · 17 mars 2026</div>
+  <h2>UX & Personnalisation de l'Expérience</h2>
+  <p class="sec-meta">Segmentation · Parcours client · Points de friction · One-to-one</p>
+  <div class="tags"><span class="tag g">Segmentation</span><span class="tag g">One-to-one</span><span class="tag b">Points de friction</span><span class="tag a">Lead scoring</span></div>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">👤 Utilisateur vs Client</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="card-grid" style="margin-top:10px">
+        <div class="card"><div class="card-icon">👁️</div><div class="card-title">Utilisateur (Prospect)</div><div class="card-body">Susceptible de devenir client une fois que la marque capte son attention et répond à ses besoins.</div></div>
+        <div class="card"><div class="card-icon">💳</div><div class="card-title">Client</div><div class="card-body">Personne qui <strong>revient acheter et racheter</strong> auprès de la marque. C'est l'objectif final.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🗺️ Étapes du Parcours Client</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="timeline">
+        <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">🎯 Cible / Suspect</div><div class="tl-desc">Dès la première interaction (quelques secondes) — visite site, clic, réaction détectée</div></div>
+        <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">🌡️ Prospect — froid, chaud, sur le point d'acheter</div><div class="tl-desc">Via lead nurturing et lead scoring — l'utilisateur est qualifié et catégorisé progressivement</div></div>
+        <div class="tl-item lit"><div class="tl-dot"></div><div class="tl-title">💰 Client</div><div class="tl-desc">Objectif final — conversion. Premier achat souvent pas encore rentable selon les investissements engagés.</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">📣 Ambassadeur — CLV maximale</div><div class="tl-desc">Client fidèle qui recommande activement la marque à son entourage</div></div>
+      </div>
+      <div class="callout g"><strong>Règle mathématique :</strong> Toutes les étapes sont indispensables et interdépendantes. Si on n'arrive pas à attirer un prospect, on ne peut pas le convertir. Si le client n'est pas converti, on ne peut pas augmenter sa valeur. C'est mathématique.</div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">⚡ Segmentation & Personnalisation One-to-One</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <ul class="klist">
+        <li><strong>Données sociodémographiques :</strong> âge, sexe, localisation, situation familiale</li>
+        <li><strong>Données transactionnelles :</strong> historique d'achats, fréquence, panier moyen</li>
+        <li><strong>Données comportementales :</strong> navigation web, ouverture d'emails, abandon de panier</li>
+        <li><strong>Données contextuelles :</strong> moment de la journée, canal utilisé, géolocalisation</li>
+        <li>Objectif : <strong>parcours one-to-one</strong> — chaque utilisateur a son propre parcours personnalisé</li>
+      </ul>
+      <div class="prof-says">Quand vous allez sur Amazon, la page que vous avez est différente de celle de votre maman. <strong>C'est la capacité à personnaliser l'expérience de chaque utilisateur</strong> qui est un élément clé du succès d'une marque.</div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🚧 Points de Friction</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="prof-says">Un point de friction, c'est tout ce qui pourrait <strong>perturber l'utilisateur et le pousser à abandonner</strong> son parcours. Des difficultés lors du processus de paiement — c'est un point de friction majeur.</div>
+      <ul class="klist">
+        <li>Processus de paiement trop complexe → abandon de panier</li>
+        <li>Site avec bugs, erreurs 404, design qui n'inspire pas confiance</li>
+        <li>Délai de livraison trop long ou mal communiqué</li>
+        <li>Difficulté d'accès aux fichiers / à l'information</li>
+        <li>Absence de programme de fidélité ou de récompenses post-achat</li>
+      </ul>
+    </div>
+  </div>
+  <button class="btn-done" id="bd-s3" onclick="markDone('s3')">○ Marquer como visto</button>
+</div>
+
+<div class="panel" id="panel-s4">
+  <div class="sec-lbl">Session 4 · 24 mars 2026</div>
+  <h2>Cartographie du Parcours Client</h2>
+  <p class="sec-meta">Projet individuel/binôme · Stratégie omnicanale · Certification Brevo</p>
+  <div class="tags"><span class="tag g">Projet pratique</span><span class="tag g">Omnicanal</span><span class="tag b">Pédagogie inversée</span><span class="tag a">Certification Brevo</span></div>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">📌 Travail pratique — Cartographie</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="callout g" style="margin-top:10px"><strong>Format :</strong> Individuel ou en binôme. L'entreprise doit respecter 3 conditions obligatoires :</div>
+      <ul class="klist">
+        <li><strong>Présence web</strong> — site internet actif</li>
+        <li><strong>Présence sur les réseaux sociaux</strong></li>
+        <li><strong>Point de vente physique</strong> (magasin)</li>
+      </ul>
+      <ul class="klist">
+        <li>Analyser la <strong>cible</strong> : principale, secondaire et relai (avant de commencer la cartographie)</li>
+        <li>Cartographier : <strong>découverte → considération → recherche → finalisation</strong></li>
+        <li>Identifier les <strong>points de friction</strong> à chaque étape</li>
+        <li>Proposer une <strong>stratégie omnicanale</strong> cohérente</li>
+      </ul>
+      <div class="prof-says">Ce que je regarde, c'est <strong>le fond, ce que vous proposez</strong>, pas uniquement la forme. Vous pouvez capitaliser sur le travail de groupe précédent si l'entreprise respecte les conditions.</div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🔁 Pédagogie inversée — Pourquoi cette méthode</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="prof-says">La pédagogie inversée, ça veut dire que <strong>vous apprenez par la pratique plutôt que par la théorie</strong>. Le fait d'absorber de l'information passivement, c'est du temps perdu. Les résultats ont été meilleurs que l'année précédente en format classique.</div>
+      <ul class="klist">
+        <li>Supports déposés sur PSBLab <strong>après la séance</strong></li>
+        <li>Évaluation : <strong>implication, assiduité</strong>, capacité à chercher, structurer, restituer</li>
+        <li>Seuil de <strong>50–60%</strong> suffisant pour valider</li>
+        <li>D'anciens étudiants sont devenus responsables CRM — dont un chez Amazon aux Pays-Bas</li>
+      </ul>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🏅 Certification Brevo & compétences techniques</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="prof-says">Avec cette certification, vous avez une <strong>ouverture sur ce domaine</strong>. Ce n'est pas un niveau expert — c'est un début. Si dans votre entreprise on vous demande d'utiliser un CRM, vous pouvez être assigné à des tâches techniques.</div>
+      <ul class="klist">
+        <li>1 séance pratique + <strong>travail personnel supplémentaire</strong> nécessaire</li>
+        <li>Examen final = <strong>QCM</strong></li>
+        <li>Compétences <strong>transférables</strong> à HubSpot, Salesforce, Brevo, Pipedrive — même logique</li>
+        <li>La maîtrise CRM nécessite un <strong>apprentissage continu</strong> — le domaine évolue perpétuellement</li>
+        <li>Compétences techniques : automatisation emails, manipulation données, création fiches contact, centralisation</li>
+      </ul>
+    </div>
+  </div>
+  <button class="btn-done" id="bd-s4" onclick="markDone('s4')">○ Marquer como visto</button>
+</div>
+
+<div class="panel" id="panel-s5">
+  <div class="sec-lbl">Session 5 · 30 mars 2026</div>
+  <h2>HubSpot Sales Hub — Pratique</h2>
+  <p class="sec-meta">4 modules de certification · Leads, pipeline, app mobile</p>
+  <div class="tags"><span class="tag g">HubSpot</span><span class="tag g">Leads</span><span class="tag g">Pipeline</span><span class="tag b">App mobile</span><span class="tag a">Certification</span></div>
+  <div class="callout g">Session centrée sur la pratique avec HubSpot Sales Hub. <strong>4 PDFs de la certification HubSpot.</strong> Compétences entièrement transférables à Salesforce, Brevo, Pipedrive, Zoho — même logique, outils différents.</div>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">📄 4 Modules de la certification</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="card-grid" style="margin-top:10px">
+        <div class="card"><div class="card-icon">🔍</div><div class="card-title">Module 1 — Identifier des leads qualifiés</div><div class="card-body">Identifier et qualifier des prospects dans HubSpot. Scoring, critères de qualification, BANT.</div></div>
+        <div class="card"><div class="card-icon">🤝</div><div class="card-title">Module 2 — Entrer en relation</div><div class="card-body">Techniques de prise de contact, séquences de prospection automatisées, templates d'emails.</div></div>
+        <div class="card"><div class="card-icon">💼</div><div class="card-title">Module 3 — Conclure des transactions</div><div class="card-body">Gérer le pipeline, faire avancer les deals, techniques de closing. KPIs commerciaux.</div></div>
+        <div class="card"><div class="card-icon">📱</div><div class="card-title">Module 4 — App Mobile (réduire frictions)</div><div class="card-body">Utilisation de l'app mobile HubSpot pour réduire les frictions commerciales terrain.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">💡 Concepts clés HubSpot Sales</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li><strong>Fiches contact</strong> — centralisation de toutes les informations d'un contact</li>
+      <li><strong>Pipeline de vente</strong> — visualisation des étapes de prospection jusqu'au deal conclu</li>
+      <li><strong>Séquences emails</strong> — automatisation des relances selon les actions du contact</li>
+      <li><strong>Lead scoring</strong> — attribution d'un score selon l'engagement du prospect (BANT)</li>
+      <li><strong>App mobile</strong> — gestion en temps réel, réduction des frictions terrain</li>
+      <li>Compétences <strong>transférables</strong> à tout autre CRM du marché</li>
+    </ul></div>
+  </div>
+  <button class="btn-done" id="bd-s5" onclick="markDone('s5')">○ Marquer como visto</button>
+</div>
+
+<div class="panel" id="panel-crm">
+  <div class="sec-lbl">Système CRM</div>
+  <h2>CRM — Customer Relationship Management</h2>
+  <p class="sec-meta">Définition · Finalités · Cas d'usage · Éditeurs</p>
+  <div class="callout g">Le CRM est un système conçu pour <strong>centraliser, structurer et exploiter les données clients</strong> afin d'optimiser la relation commerciale, marketing et de service.</div>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🎯 Finalités & Cas d'usage</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li>Suivre et <strong>historiser les interactions clients</strong> (contacts, ventes, support)</li>
+      <li>Piloter les <strong>activités commerciales</strong> (opportunités, relances, devis)</li>
+      <li><strong>Personnaliser la relation client</strong> à chaque interaction</li>
+      <li><strong>Fidéliser</strong> grâce à une meilleure connaissance client</li>
+      <li>Plan de <strong>relance commerciale</strong> basé sur l'historique d'achat</li>
+      <li>Automatiser l'<strong>envoi d'email</strong> suite à un abandon de panier</li>
+    </ul></div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🛒 Éditeurs CRM — Référence marché</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <table class="tbl">
+        <thead><tr><th>Solution</th><th>Part</th><th>Spécificité</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Salesforce</strong></td><td><span class="badge">21,7%</span></td><td>Leader mondial, très personnalisable, cloud natif</td></tr>
+          <tr><td><strong>HubSpot CRM</strong></td><td><span class="badge">5,7%</span></td><td>Freemium, simple, très utilisé PME</td></tr>
+          <tr><td><strong>Microsoft Dynamics 365</strong></td><td><span class="badge">5-6%</span></td><td>Intégré à l'environnement Microsoft, orienté B2B</td></tr>
+          <tr><td><strong>Zoho CRM</strong></td><td><span class="badge">3%</span></td><td>Cloud complet et abordable</td></tr>
+          <tr><td><strong>SAP Customer Experience</strong></td><td><span class="badge">4%</span></td><td>CRM d'entreprise, lié à SAP ERP</td></tr>
+          <tr><td><strong>Efficy CRM</strong></td><td></td><td>Éditeur européen, conformité RGPD, secteur public</td></tr>
+          <tr><td><strong>Sellsy / Axonaut</strong></td><td></td><td>Solutions françaises, CRM + facturation pour TPE/PME</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-dmp">
+  <div class="sec-lbl">Plateforme DMP</div>
+  <h2>DMP — Data Management Platform</h2>
+  <p class="sec-meta">Données anonymes · Ciblage publicitaire · Lookalike</p>
+  <div class="callout b">La DMP est une plateforme utilisée pour <strong>collecter, centraliser et segmenter des données principalement comportementales</strong> issues de sources en ligne et hors ligne, à des fins de ciblage publicitaire.</div>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🎯 Finalités & Cas d'usage DMP</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li>Constituer une <strong>vision unifiée des profils utilisateurs</strong> (cookies, ID CRM, emails…)</li>
+      <li>Créer des <strong>segments d'audience à forte valeur</strong> pour le ciblage</li>
+      <li>Activer ces segments sur les <strong>canaux digitaux</strong> (display, réseaux, email…)</li>
+      <li>Optimiser les campagnes via des mécanismes de <strong>ciblage et de lookalike</strong></li>
+      <li>Cibler en <strong>display</strong> les visiteurs d'un site n'ayant pas converti</li>
+      <li><strong>Exclure les clients existants</strong> des campagnes d'acquisition payantes</li>
+    </ul></div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🛒 Éditeurs DMP</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <table class="tbl">
+        <thead><tr><th>Solution</th><th>Spécificité</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Adobe Audience Manager</strong></td><td>DMP très complète, intégrée à Adobe Experience Cloud</td></tr>
+          <tr><td><strong>Salesforce DMP (ex-Krux)</strong></td><td>Intégrée à Salesforce Marketing Cloud, forte capacité média</td></tr>
+          <tr><td><strong>Oracle BlueKai</strong></td><td>DMP orientée acquisition média, riche en données tierces</td></tr>
+          <tr><td><strong>Commanders Act DMP</strong></td><td>Éditeur français, conforme RGPD, forte gouvernance</td></tr>
+          <tr><td><strong>OnAudience / Weborama</strong></td><td>DMP européenne, expertise data et média</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-cdp">
+  <div class="sec-lbl">CDP & Comparatif</div>
+  <h2>CDP — Customer Data Platform & Comparatif</h2>
+  <p class="sec-meta">Réconciliation des données · Vision 360° · RGPD</p>
+  <div class="callout a">La CDP est une plateforme marketing qui permet de <strong>réconcilier toutes les données clients, identifiées ou anonymes</strong>, pour créer une vision unifiée et exploitable en temps réel.</div>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🔗 Comparatif CRM / DMP / CDP</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="compare" style="margin-top:10px">
+        <div class="cmp-col"><div class="cmp-head g">CRM</div><div class="cmp-body">
+          <div class="cmp-item g">Données <strong>identifiées</strong></div>
+          <div class="cmp-item g">Source : interactions clients, ventes</div>
+          <div class="cmp-item g">Objectif : relation client & suivi commercial</div>
+          <div class="cmp-item g">Segmentation : Scoring, RFM</div>
+          <div class="cmp-item g">Temps réel : <strong>non</strong></div>
+          <div class="cmp-item g">Réconciliation : <strong>partielle</strong></div>
+        </div></div>
+        <div class="cmp-col"><div class="cmp-head b">DMP</div><div class="cmp-body">
+          <div class="cmp-item b">Données <strong>anonymes/pseudonymisées</strong></div>
+          <div class="cmp-item b">Source : sites web, apps, campagnes média</div>
+          <div class="cmp-item b">Objectif : ciblage média et publicité</div>
+          <div class="cmp-item b">Segmentation : comportementale, média</div>
+          <div class="cmp-item b">Temps réel : <strong>généralement batch</strong></div>
+          <div class="cmp-item b">Réconciliation : <strong>non</strong></div>
+        </div></div>
+        <div class="cmp-col"><div class="cmp-head a">CDP</div><div class="cmp-body">
+          <div class="cmp-item a">Données <strong>identifiées + anonymes</strong></div>
+          <div class="cmp-item a">Source : CRM, web, mobile, POS, support…</div>
+          <div class="cmp-item a">Objectif : unification → activation cross-canal</div>
+          <div class="cmp-item a">Segmentation : segments dynamiques</div>
+          <div class="cmp-item a">Temps réel : <strong>oui</strong></div>
+          <div class="cmp-item a">Réconciliation : <strong>oui</strong> (fusion identités)</div>
+        </div></div>
+      </div>
+      <div class="callout g" style="margin-top:12px"><strong>Complémentarité :</strong> Le CRM est le pilier de la relation client. La DMP est orientée ciblage anonyme. <strong>La CDP fait le pont</strong> : elle centralise et unifie pour orchestrer des activations omni-canales personnalisées.</div>
+    </div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">🔒 RGPD — Points essentiels</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li><strong>Licéité, loyauté, transparence :</strong> traitement fondé sur une base légale (consentement, contrat…)</li>
+      <li><strong>Limitation des finalités :</strong> données utilisées uniquement pour les objectifs déclarés</li>
+      <li><strong>Minimisation :</strong> ne collecter que les données réellement utiles</li>
+      <li><strong>Durée de conservation limitée</strong> et sécurité/confidentialité</li>
+      <li>Droits des personnes : accès, rectification, opposition, effacement, portabilité</li>
+    </ul>
+    <div class="callout a" style="margin-top:10px"><strong>En pratique :</strong> CMP (Consent Management Platform), Privacy by Design, registre RGPD, segmenter selon le statut de consentement, former les équipes.</div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-glossaire">
+  <div class="sec-lbl">Glossaire</div>
+  <h2>Termes clés du module</h2>
+  <p class="sec-meta">Définitions essentielles pour l'examen</p>
+  <div class="acc open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">Connaissance client & Données</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li><strong>CLV (Customer Lifetime Value)</strong> — Valeur totale générée par un client sur toute sa relation avec la marque</li>
+      <li><strong>Donnée 1st party</strong> — Collectée directement par l'entreprise via ses propres canaux</li>
+      <li><strong>Donnée 3rd party</strong> — Collectée par des partenaires ou plateformes tierces</li>
+      <li><strong>Segmentation</strong> — Découpage d'une base client en groupes homogènes selon des critères communs</li>
+      <li><strong>Persona</strong> — Représentation semi-fictive d'un client type, basée sur des données réelles</li>
+      <li><strong>RFM (Récence, Fréquence, Montant)</strong> — Méthode de segmentation pour adapter les actions de rétention</li>
+      <li><strong>RCU (Référentiel Client Unique)</strong> — Base consolidée offrant une vision unique et cohérente de chaque client</li>
+    </ul></div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">CRM & Ventes</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li><strong>CRM opérationnel</strong> — Gère les interactions quotidiennes (contacts, devis, relances, tickets)</li>
+      <li><strong>CRM analytique</strong> — Fournit des analyses de la base client (segmentation, performance, dashboards)</li>
+      <li><strong>Pipeline de vente</strong> — Représentation visuelle des étapes du cycle de vente</li>
+      <li><strong>Lead</strong> — Contact identifié qui peut devenir client</li>
+      <li><strong>Lead Nurturing</strong> — Nourrir et qualifier un prospect vers l'achat</li>
+      <li><strong>Lead Scoring</strong> — Attribution d'un score selon l'engagement du prospect</li>
+      <li><strong>BANT</strong> — Méthode de qualification : Budget, Authority, Need, Timing</li>
+      <li><strong>Cross-sell / Upsell</strong> — Vente croisée ou montée en gamme à un client existant</li>
+    </ul></div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">DMP, CDP & Marketing</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li><strong>DMP</strong> — Plateforme qui centralise et active des données anonymes (cookies, IDs) à des fins publicitaires</li>
+      <li><strong>CDP</strong> — Centralise toutes les données clients (1st party), les unifie et permet leur activation marketing omnicanale</li>
+      <li><strong>ID Matching</strong> — Rapprochement d'identifiants pour réconcilier les profils</li>
+      <li><strong>Lookalike audience</strong> — Audience similaire à une audience existante, générée par algorithme</li>
+      <li><strong>SCV (Single Customer View)</strong> — Vue complète et structurée d'un client</li>
+      <li><strong>Marketing automation</strong> — Automatisation de scénarios selon le comportement client</li>
+      <li><strong>Trigger marketing</strong> — Message automatique déclenché par une action client</li>
+      <li><strong>Point de friction</strong> — Obstacle dans le parcours client qui risque de provoquer un abandon</li>
+      <li><strong>ZMOT</strong> — Zero Moment of Truth : recherche en ligne avant d'acheter</li>
+    </ul></div>
+  </div>
+  <div class="acc">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-title">Légal & Conformité</div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body"><ul class="klist">
+      <li><strong>RGPD (GDPR)</strong> — Règlement européen : consentement, transparence, droits des personnes</li>
+      <li><strong>CMP</strong> — Consent Management Platform : outil de gestion des préférences de consentement</li>
+      <li><strong>Privacy by Design</strong> — Intégration de la protection des données dès la conception</li>
+      <li><strong>Data Governance</strong> — Règles pour assurer qualité, sécurité et conformité des données</li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-qcm">
+  <div class="sec-lbl">QCM — Examen Final</div>
+  <h2>Évaluation des connaissances</h2>
+  <p class="sec-meta">20 questions · Toutes sessions confondues · Note sur 20</p>
+  <div class="quiz-intro">
+    <h3>🎓 Prêt(e) pour l'examen ?</h3>
+    <p>Ce QCM couvre l'intégralité du cours — comportement consommateur, CRM, DMP, CDP, parcours client, RGPD.<br>Une seule tentative par question. Bonne chance !</p>
+    <div class="score-display" id="scoreDisplay">0/20</div>
+    <div class="score-sub">Score en temps réel</div>
+  </div>
+
+  <div class="qblock" id="qb1">
+    <div class="q-num">Question 1/20 · Session 1</div>
+    <div class="q-text">Quel est le rôle principal d'un système CRM ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q1','Non — un CRM gère la relation client, pas la comptabilité. C\'est le rôle d\'un ERP.')">Gérer la comptabilité de l'entreprise</div>
+      <div class="q-opt" onclick="ans(this,true,'q1','Correct ! Le CRM centralise, structure et exploite les données clients pour optimiser la relation commerciale, marketing et de service.')">Centraliser, structurer et exploiter les données clients pour optimiser la relation commerciale</div>
+      <div class="q-opt" onclick="ans(this,false,'q1','Non — créer des publicités est plutôt le rôle d\'une DMP ou d\'un outil d\'activation média.')">Créer des campagnes publicitaires ciblées</div>
+      <div class="q-opt" onclick="ans(this,false,'q1','Non — la DMP travaille avec des données anonymes/cookies pour le ciblage publicitaire.')">Gérer les données anonymes pour le ciblage publicitaire</div>
+    </div>
+    <div class="q-fb" id="q1"></div>
+  </div>
+
+  <div class="qblock" id="qb2">
+    <div class="q-num">Question 2/20 · Session 1</div>
+    <div class="q-text">Quel est le taux de croissance annuel du marché CRM et sa taille prévue en 2028 ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q2','Non — la valeur est 128 milliards de dollars avec 12% de croissance annuelle.')">64 milliards $ avec 6% de croissance</div>
+      <div class="q-opt" onclick="ans(this,true,'q2','Parfait ! Le marché CRM devrait atteindre 128 milliards de dollars en 2028 avec un taux de croissance annuel de 12 %.')">128 milliards $ avec 12% de croissance annuelle</div>
+      <div class="q-opt" onclick="ans(this,false,'q2','Non — c\'est 128 milliards, pas 200.')">200 milliards $ avec 20% de croissance</div>
+      <div class="q-opt" onclick="ans(this,false,'q2','Non.')">96 milliards $ avec 8% de croissance</div>
+    </div>
+    <div class="q-fb" id="q2"></div>
+  </div>
+
+  <div class="qblock" id="qb3">
+    <div class="q-num">Question 3/20 · Session 1</div>
+    <div class="q-text">Quelle est la part de marché mondiale de Salesforce en 2024 ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q3','Non — c\'est la part de HubSpot (~5,7%).')">5,7 %</div>
+      <div class="q-opt" onclick="ans(this,false,'q3','Non — Oracle représente ~5% du marché.')">5 %</div>
+      <div class="q-opt" onclick="ans(this,true,'q3','Exact ! Salesforce domine le marché mondial avec 21,7% de part de marché en 2024.')">21,7 %</div>
+      <div class="q-opt" onclick="ans(this,false,'q3','Non — SAP représente ~4% du marché.')">4 %</div>
+    </div>
+    <div class="q-fb" id="q3"></div>
+  </div>
+
+  <div class="qblock" id="qb4">
+    <div class="q-num">Question 4/20 · Session 2</div>
+    <div class="q-text">Quel pourcentage des Français possèdent un smartphone selon le baromètre digital ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q4','Non — c\'est 91% selon les données du cours.')">81 %</div>
+      <div class="q-opt" onclick="ans(this,true,'q4','Correct ! 91% des Français sont équipés d\'un smartphone. Ce taux atteint 96% chez les 12-17 ans et 70% chez les 70 ans et plus.')">91 %</div>
+      <div class="q-opt" onclick="ans(this,false,'q4','Non — 96% c\'est le taux des 12-17 ans spécifiquement.')">96 %</div>
+      <div class="q-opt" onclick="ans(this,false,'q4','Non — c\'est 91%.')">74 %</div>
+    </div>
+    <div class="q-fb" id="q4"></div>
+  </div>
+
+  <div class="qblock" id="qb5">
+    <div class="q-num">Question 5/20 · Session 2</div>
+    <div class="q-text">Que signifie CLV et quelle est sa définition exacte ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q5','Non.')">Client Lead Value — valeur d'un lead</div>
+      <div class="q-opt" onclick="ans(this,false,'q5','Non — CLV concerne le client, pas la conversion du lead.')">Conversion Lead Velocity — vitesse de conversion</div>
+      <div class="q-opt" onclick="ans(this,true,'q5','Parfait ! Customer Lifetime Value = la valeur du client dans une entreprise sur toute sa durée de vie. C\'est pourquoi la fidélisation est indispensable.')">Customer Lifetime Value — valeur totale générée par un client tout au long de sa relation avec la marque</div>
+      <div class="q-opt" onclick="ans(this,false,'q5','Non.')">Customer Loyalty Value — valeur de fidélisation</div>
+    </div>
+    <div class="q-fb" id="q5"></div>
+  </div>
+
+  <div class="qblock" id="qb6">
+    <div class="q-num">Question 6/20 · Session 2</div>
+    <div class="q-text">Pourquoi le premier achat est-il souvent déficitaire pour l'entreprise ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q6','Non — ce n\'est pas la raison principale.')">Parce que le prix de vente est trop bas</div>
+      <div class="q-opt" onclick="ans(this,true,'q6','Exact ! La marque investit en amont (publicité, marketing) avant que le prospect devienne client. Ces investissements ne sont souvent pas amortis dès le premier achat.')">Parce que les investissements d'acquisition (marketing, publicité) engagés avant cet achat ne sont pas encore amortis</div>
+      <div class="q-opt" onclick="ans(this,false,'q6','Non — la logistique est un facteur mais pas la raison principale.')">Parce que les coûts logistiques sont trop élevés</div>
+      <div class="q-opt" onclick="ans(this,false,'q6','Non — les taxes ne sont pas la cause principale.')">Parce que les taxes sur les ventes sont trop importantes</div>
+    </div>
+    <div class="q-fb" id="q6"></div>
+  </div>
+
+  <div class="qblock" id="qb7">
+    <div class="q-num">Question 7/20 · Session 3</div>
+    <div class="q-text">Quel est l'ordre correct des étapes du parcours client ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q7','Non — le bon ordre commence par le suspect, pas le client.')">Client → Prospect → Suspect → Ambassadeur</div>
+      <div class="q-opt" onclick="ans(this,true,'q7','Parfait ! Suspect (première interaction) → Prospect (qualifié via lead nurturing & scoring) → Client (conversion) → Ambassadeur (CLV maximale).')">Suspect → Prospect (froid/chaud) → Client → Ambassadeur</div>
+      <div class="q-opt" onclick="ans(this,false,'q7','Non — l\'ambassadeur est la dernière étape.')">Suspect → Client → Ambassadeur → Prospect</div>
+      <div class="q-opt" onclick="ans(this,false,'q7','Non — le suspect vient avant le prospect.')">Prospect → Client → Suspect → Ambassadeur</div>
+    </div>
+    <div class="q-fb" id="q7"></div>
+  </div>
+
+  <div class="qblock" id="qb8">
+    <div class="q-num">Question 8/20 · Session 3</div>
+    <div class="q-text">Qu'est-ce qu'un 'point de friction' dans le parcours client ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q8','Non — c\'est l\'inverse. Un point de friction ralentit ou stoppe le parcours.')">Un moment qui accélère la conversion du prospect</div>
+      <div class="q-opt" onclick="ans(this,true,'q8','Correct ! Un point de friction est tout élément qui perturbe l\'utilisateur et peut l\'amener à abandonner. Exemple : processus de paiement complexe → abandon de panier.')">Tout élément qui perturbe l'utilisateur et peut provoquer un abandon du parcours</div>
+      <div class="q-opt" onclick="ans(this,false,'q8','Non — c\'est une récompense qui encourage la fidélisation, pas un frein.')">Un programme de récompenses pour fidéliser le client</div>
+      <div class="q-opt" onclick="ans(this,false,'q8','Non — un point de friction est une friction dans le parcours client, pas une fonctionnalité.')">Une fonctionnalité spécifique du logiciel CRM</div>
+    </div>
+    <div class="q-fb" id="q8"></div>
+  </div>
+
+  <div class="qblock" id="qb9">
+    <div class="q-num">Question 9/20 · Session 3</div>
+    <div class="q-text">Que signifie le lead nurturing dans le contexte CRM ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q9','Non — le nurturing n\'est pas une analyse financière.')">Analyser la rentabilité d'un lead</div>
+      <div class="q-opt" onclick="ans(this,true,'q9','Exact ! Le lead nurturing consiste à nourrir, qualifier et accompagner un prospect via des actions ciblées (emails, contenus, offres) pour le faire progresser vers l\'achat.')">Nourrir et qualifier un prospect tout au long de son parcours pour le conduire vers la conversion</div>
+      <div class="q-opt" onclick="ans(this,false,'q9','Non — créer des publicités est différent du nurturing.')">Créer des publicités payantes pour attirer de nouveaux leads</div>
+      <div class="q-opt" onclick="ans(this,false,'q9','Non — la suppression de leads n\'est pas du nurturing.')">Supprimer les leads inactifs de la base de données</div>
+    </div>
+    <div class="q-fb" id="q9"></div>
+  </div>
+
+  <div class="qblock" id="qb10">
+    <div class="q-num">Question 10/20 · Session 4</div>
+    <div class="q-text">Quelles sont les 3 conditions obligatoires pour l'entreprise choisie dans le projet de cartographie ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q10','Non — ce ne sont pas les conditions du cours.')">Siège social, filiale internationale, boutique en ligne</div>
+      <div class="q-opt" onclick="ans(this,true,'q10','Exact ! Ces 3 conditions sont obligatoires pour permettre une cartographie omnicanale réelle (digital + physique).')">Site web actif + présence sur les réseaux sociaux + point de vente physique</div>
+      <div class="q-opt" onclick="ans(this,false,'q10','Non — ce ne sont pas les 3 conditions du projet.')">Catalogue produits + newsletter + service client</div>
+      <div class="q-opt" onclick="ans(this,false,'q10','Non — l\'app mobile n\'est pas une des conditions obligatoires.')">Application mobile + site web + service après-vente</div>
+    </div>
+    <div class="q-fb" id="q10"></div>
+  </div>
+
+  <div class="qblock" id="qb11">
+    <div class="q-num">Question 11/20 · Session 4</div>
+    <div class="q-text">Les compétences acquises sur HubSpot sont-elles transférables à d'autres CRM ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q11','Non — la logique est exactement la même d\'un outil à l\'autre.')">Non, chaque CRM a une logique totalement différente</div>
+      <div class="q-opt" onclick="ans(this,true,'q11','Correct ! Comme Kahina l\'explique : HubSpot, Brevo, Salesforce, Pipedrive — la logique reste la même. Ce sont les bases qui comptent.')">Oui, la logique CRM est la même quel que soit l'outil — les compétences sont transférables</div>
+      <div class="q-opt" onclick="ans(this,false,'q11','Non — ces compétences sont immédiatement applicables en entreprise.')">Non, ce sont des compétences uniquement théoriques</div>
+      <div class="q-opt" onclick="ans(this,false,'q11','Non — les compétences sont transférables à tous les CRM du marché.')">Uniquement à Salesforce, pas aux autres outils</div>
+    </div>
+    <div class="q-fb" id="q11"></div>
+  </div>
+
+  <div class="qblock" id="qb12">
+    <div class="q-num">Question 12/20 · Systèmes</div>
+    <div class="q-text">Quelle est la principale différence entre la DMP et la CDP en termes de données ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q12','Non — c\'est presque l\'inverse.')">La DMP traite des données identifiées, la CDP traite des données anonymes</div>
+      <div class="q-opt" onclick="ans(this,true,'q12','Parfait ! La DMP = données anonymes pour publicité. La CDP = réconciliation de toutes les données pour une vision unifiée du client.')">La DMP traite des données anonymes (ciblage pub), la CDP réconcilie données identifiées ET anonymes pour une vision 360°</div>
+      <div class="q-opt" onclick="ans(this,false,'q12','Non — la différence concerne le type de données, pas le format.')">La DMP traite des données en temps réel, la CDP en mode batch</div>
+      <div class="q-opt" onclick="ans(this,false,'q12','Non — les deux peuvent opérer en cloud.')">La DMP est on-premise, la CDP est toujours cloud</div>
+    </div>
+    <div class="q-fb" id="q12"></div>
+  </div>
+
+  <div class="qblock" id="qb13">
+    <div class="q-num">Question 13/20 · Systèmes</div>
+    <div class="q-text">Quel est l'objectif principal d'une DMP (Data Management Platform) ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q13','Non — c\'est l\'objectif principal du CRM.')">Gérer la relation client et le suivi commercial quotidien</div>
+      <div class="q-opt" onclick="ans(this,false,'q13','Non — c\'est l\'objectif de la CDP.')">Unifier toutes les données clients identifiées pour une vision 360°</div>
+      <div class="q-opt" onclick="ans(this,true,'q13','Exact ! La DMP collecte et segmente des données comportementales (principalement anonymes) pour créer des audiences et optimiser les campagnes publicitaires.')">Collecter et segmenter des données comportementales (souvent anonymes) pour optimiser le ciblage publicitaire digital</div>
+      <div class="q-opt" onclick="ans(this,false,'q13','Non — la gestion des leads B2B est plutôt l\'objectif d\'un CRM commercial.')">Gérer les leads B2B dans un pipeline de vente</div>
+    </div>
+    <div class="q-fb" id="q13"></div>
+  </div>
+
+  <div class="qblock" id="qb14">
+    <div class="q-num">Question 14/20 · Systèmes</div>
+    <div class="q-text">Qu'est-ce que la segmentation RFM et à quoi sert-elle ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q14','Non — ce n\'est pas la définition de RFM.')">Ratio, Fidélité, Montant — pour calculer la rentabilité d'un client</div>
+      <div class="q-opt" onclick="ans(this,true,'q14','Correct ! La méthode RFM (Récence, Fréquence, Montant) permet de segmenter la base client selon ces 3 dimensions pour adapter les actions de rétention.')">Récence, Fréquence, Montant — pour segmenter les clients et adapter les actions de fidélisation et de rétention</div>
+      <div class="q-opt" onclick="ans(this,false,'q14','Non.')">Reach, Frequency, Money — pour mesurer l'impact publicitaire</div>
+      <div class="q-opt" onclick="ans(this,false,'q14','Non — RFM n\'est pas une méthode de scoring B2B.')">Réseau, Fonction, Mission — pour scorer les contacts B2B</div>
+    </div>
+    <div class="q-fb" id="q14"></div>
+  </div>
+
+  <div class="qblock" id="qb15">
+    <div class="q-num">Question 15/20 · RGPD</div>
+    <div class="q-text">Parmi les suivants, lequel est un principe du RGPD ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q15','Non — le RGPD impose une durée de conservation limitée. Il n\'y a pas de conservation illimitée.')">Les entreprises peuvent conserver les données des clients aussi longtemps qu'elles le souhaitent</div>
+      <div class="q-opt" onclick="ans(this,true,'q15','Exact ! La minimisation des données est un principe fondamental du RGPD : on ne collecte que ce qui est nécessaire aux finalités déclarées.')">La minimisation — ne collecter que les données réellement utiles</div>
+      <div class="q-opt" onclick="ans(this,false,'q15','Non — le RGPD impose la limitation des finalités : les données utilisées uniquement pour les objectifs déclarés.')">Les données peuvent être utilisées pour n'importe quelle finalité commerciale</div>
+      <div class="q-opt" onclick="ans(this,false,'q15','Non — le consentement est l\'une des bases légales fondamentales du RGPD.')">Le consentement n'est pas obligatoire si la finalité est commerciale</div>
+    </div>
+    <div class="q-fb" id="q15"></div>
+  </div>
+
+  <div class="qblock" id="qb16">
+    <div class="q-num">Question 16/20 · Session 2</div>
+    <div class="q-text">Quel pourcentage des Français déclarent que la durabilité influence leurs habitudes de consommation ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q16','Non — c\'est bien plus élevé.')">54 %</div>
+      <div class="q-opt" onclick="ans(this,false,'q16','Non — c\'est encore plus.')">72 %</div>
+      <div class="q-opt" onclick="ans(this,true,'q16','Correct ! 94% des Français déclarent que la durabilité influence leurs habitudes de consommation (provenance, emballages, matériaux).')">94 %</div>
+      <div class="q-opt" onclick="ans(this,false,'q16','Non — 66% c\'est le chiffre de ceux qui préfèrent les marques engagées éthiquement.')">66 %</div>
+    </div>
+    <div class="q-fb" id="q16"></div>
+  </div>
+
+  <div class="qblock" id="qb17">
+    <div class="q-num">Question 17/20 · Systèmes</div>
+    <div class="q-text">Quel outil CRM est recommandé pour une TPE souhaitant démarrer sans budget ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q17','Non — Salesforce est pour les grandes entreprises, c\'est complexe et coûteux.')">Salesforce Sales Cloud</div>
+      <div class="q-opt" onclick="ans(this,false,'q17','Non — SAP CX est orienté grandes entreprises industrielles.')">SAP Customer Experience</div>
+      <div class="q-opt" onclick="ans(this,true,'q17','Exact ! Ces solutions sont recommandées pour les TPE : interface intuitive, gratuit ou low cost, installation rapide, peu de formation nécessaire.')">HubSpot Free, Zoho CRM ou noCRM.io</div>
+      <div class="q-opt" onclick="ans(this,false,'q17','Non — Microsoft Dynamics 365 est plutôt pour les PME/grandes entreprises avec un environnement Microsoft.')">Microsoft Dynamics 365</div>
+    </div>
+    <div class="q-fb" id="q17"></div>
+  </div>
+
+  <div class="qblock" id="qb18">
+    <div class="q-num">Question 18/20 · Session 2</div>
+    <div class="q-text">Quel est le chiffre d'affaires record du e-commerce français mentionné dans le cours ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q18','Non — c\'est 175,3 milliards.')">120 milliards d'euros</div>
+      <div class="q-opt" onclick="ans(this,false,'q18','Non — c\'est 175,3 milliards.')">98 milliards d'euros</div>
+      <div class="q-opt" onclick="ans(this,true,'q18','Exact ! Le e-commerce français a atteint un CA record de 175,3 milliards d\'euros, marquant une progression de 9,6%. En moyenne : 62 commandes/an par cyberacheteur.')">175,3 milliards d'euros</div>
+      <div class="q-opt" onclick="ans(this,false,'q18','Non — c\'est 175,3 milliards.')">210 milliards d'euros</div>
+    </div>
+    <div class="q-fb" id="q18"></div>
+  </div>
+
+  <div class="qblock" id="qb19">
+    <div class="q-num">Question 19/20 · Systèmes</div>
+    <div class="q-text">Qu'est-ce que le RCU (Référentiel Client Unique) ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q19','Non — ce n\'est pas un rapport financier.')">Un rapport de rentabilité des campagnes CRM</div>
+      <div class="q-opt" onclick="ans(this,true,'q19','Exact ! Le RCU est une base qui fusionne les données de toutes les sources (CRM, e-commerce, SAV, emailing...) pour offrir une vision 360° unique de chaque client.')">Une base de données consolidée offrant une vision unique et cohérente de chaque client, en fusionnant des données de multiples sources</div>
+      <div class="q-opt" onclick="ans(this,false,'q19','Non — ce n\'est pas un tableau de bord.')">Un tableau de bord des KPIs commerciaux</div>
+      <div class="q-opt" onclick="ans(this,false,'q19','Non — ce n\'est pas un registre RGPD, bien qu\'ils soient liés.')">Un registre de conformité RGPD</div>
+    </div>
+    <div class="q-fb" id="q19"></div>
+  </div>
+
+  <div class="qblock" id="qb20">
+    <div class="q-num">Question 20/20 · Global</div>
+    <div class="q-text">Selon Kahina Ikhlef, quelle est la relation correcte entre outil CRM et stratégie CRM ?</div>
+    <div class="q-opts">
+      <div class="q-opt" onclick="ans(this,false,'q20','Non — les deux sont indispensables et complémentaires.')">Avoir un outil CRM suffit, la stratégie vient naturellement</div>
+      <div class="q-opt" onclick="ans(this,false,'q20','Non — l\'outil et la stratégie sont tous les deux indispensables.')">La stratégie CRM est importante, mais l'outil est optionnel</div>
+      <div class="q-opt" onclick="ans(this,false,'q20','Non — les deux sont également importants.')">L'outil CRM est plus important que la stratégie CRM</div>
+      <div class="q-opt" onclick="ans(this,true,'q20','Parfait ! Comme le dit Kahina : \'Avoir un outil CRM, c\'est juste indispensable. Avoir une stratégie CRM, c\'est juste indispensable.\' Les deux sont complémentaires.')">Les deux sont indispensables et complémentaires — l'outil sans stratégie ne sert à rien, la stratégie sans outil ne peut pas être exécutée</div>
+    </div>
+    <div class="q-fb" id="q20"></div>
+  </div>
+
+  <div class="final-score" id="finalScore">
+    <div style="font-size:34px;margin-bottom:10px">🎓</div>
+    <div class="fs-grade" id="fsGrade"></div>
+    <div class="fs-label" id="fsLabel"></div>
+    <div class="fs-bar"><div class="fs-fill" id="fsFill"></div></div>
+    <div class="fs-comment" id="fsComment"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+var done = {};
+try { done = JSON.parse(localStorage.getItem('crm3_done') || '{}'); } catch(e) {}
+var sessions = ['s1','s2','s3','s4','s5'];
+var qScore = 0;
+var answered = {};
+
+function show(id, el) {
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.sb-item').forEach(function(n){ n.classList.remove('active'); });
+  var panel = document.getElementById('panel-' + id);
+  if (panel) panel.classList.add('active');
+  if (el) el.classList.add('active');
+  updateProg();
+}
+
+function tog(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+function markDone(s) {
+  done[s] = true;
+  try { localStorage.setItem('crm3_done', JSON.stringify(done)); } catch(e) {}
+  var btn = document.getElementById('bd-' + s);
+  if (btn) { btn.classList.add('marked'); btn.textContent = '✓ Session validée !'; }
+  var si = document.getElementById('si-' + s);
+  if (si) si.classList.add('done');
+  var dot = document.getElementById('dot-' + s);
+  if (dot) dot.classList.add('done');
+  updateProg();
+}
+
+function buildDots() {
+  var container = document.getElementById('navDots');
+  if (!container) return;
+  sessions.forEach(function(s) {
+    var d = document.createElement('div');
+    d.className = 'ndot' + (done[s] ? ' done' : '');
+    d.id = 'dot-' + s;
+    d.title = s.toUpperCase();
+    d.onclick = function() {
+      var si = document.getElementById('si-' + s);
+      show(s, si);
+    };
+    container.appendChild(d);
+  });
+}
+
+function updateProg() {
+  var count = sessions.filter(function(s){ return done[s]; }).length;
+  var pct = Math.round((count / sessions.length) * 100);
+  var fill = document.getElementById('progFill');
+  var pctEl = document.getElementById('progPct');
+  if (fill) fill.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = pct + '%';
+  sessions.forEach(function(s) {
+    if (done[s]) {
+      var si = document.getElementById('si-' + s);
+      if (si) si.classList.add('done');
+      var btn = document.getElementById('bd-' + s);
+      if (btn) { btn.classList.add('marked'); btn.textContent = '✓ Session validée !'; }
+    }
+  });
+}
+
+function ans(el, correct, qid, feedback) {
+  if (answered[qid]) return;
+  answered[qid] = true;
+  var block = el.closest('.qblock');
+  block.querySelectorAll('.q-opt').forEach(function(o){ o.setAttribute('disabled',''); });
+  el.classList.add(correct ? 'correct' : 'wrong');
+  var fb = document.getElementById(qid);
+  if (fb) { fb.textContent = feedback; fb.className = 'q-fb show ' + (correct ? 'ok' : 'ko'); }
+  block.classList.add('answered');
+  if (correct) qScore++;
+  var sd = document.getElementById('scoreDisplay');
+  if (sd) sd.textContent = qScore + '/20';
+  if (Object.keys(answered).length === 20) {
+    setTimeout(showFinal, 600);
+  }
+}
+
+function showFinal() {
+  var fs = document.getElementById('finalScore');
+  if (!fs) return;
+  fs.classList.add('show');
+  var pct = (qScore / 20) * 100;
+  document.getElementById('fsGrade').textContent = qScore + '/20';
+  document.getElementById('fsFill').style.width = pct + '%';
+  var color, label, comment;
+  if (qScore >= 18) {
+    color = '#3a6b4a'; label = '🏆 Excellent !';
+    comment = "Félicitations ! Tu maîtrises parfaitement le programme CRM & DMP. Kahina serait fière — tu es prêt(e) pour la certification Brevo et bien au-delà !";
+  } else if (qScore >= 15) {
+    color = '#3a6b4a'; label = '✅ Très bien !';
+    comment = "Très bon résultat ! Tu as de solides bases en CRM, DMP et parcours client. Quelques révisions sur les points manqués et tu seras au top pour l'examen.";
+  } else if (qScore >= 12) {
+    color = '#b5712a'; label = '📚 Bien — à consolider';
+    comment = "Tu as les fondamentaux mais certaines notions nécessitent une révision. Relis les sections CRM/DMP/CDP et le parcours client en priorité.";
+  } else if (qScore >= 10) {
+    color = '#b5712a'; label = '⚠️ À réviser';
+    comment = "Tu as besoin de revoir l'ensemble du cours. Commence par les sessions 1 à 3 et utilise le glossaire. L'examen partiel couvre tous ces concepts.";
+  } else {
+    color = '#b84040'; label = '❌ Insuffisant';
+    comment = "Il faut reprendre le cours depuis le début. Écoute les recordings de Kahina dans ta Notion, lis chaque section attentivement et refais ce QCM.";
+  }
+  document.getElementById('fsFill').style.background = color;
+  document.getElementById('fsGrade').style.color = color;
+  document.getElementById('fsLabel').textContent = label;
+  document.getElementById('fsComment').textContent = comment;
+  fs.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+buildDots();
+updateProg();
+</script>
+</body>
+</html>
